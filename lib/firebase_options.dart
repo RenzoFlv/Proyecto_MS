@@ -47,21 +47,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA2kj8fO4YxGIvqMEfPX0hTvz7CorwRlSQ',
-    appId: '1:358709916527:web:ed9582cfe07c412ed06e9a',
-    messagingSenderId: '358709916527',
-    projectId: 'upt-tutoria-app',
-    authDomain: 'upt-tutoria-app.firebaseapp.com',
-    storageBucket: 'upt-tutoria-app.firebasestorage.app',
-    measurementId: 'G-433ZJ3FY01',
+    apiKey: 'AIzaSyDT14kS68DEQlltmW5q53z1dAjbcXMAH54',
+    appId: '1:416340531176:web:7cf3b68099e1858a40f65d',
+    messagingSenderId: '416340531176',
+    projectId: 'bd-app-epis',
+    authDomain: 'bd-app-epis.firebaseapp.com',
+    storageBucket: 'bd-app-epis.firebasestorage.app',
+    measurementId: 'G-GJ5JF1JSQM',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDlFhRj2BrAiGtsVuLT1oIk1akJrfwBN6s',
-    appId: '1:358709916527:android:08968abda1a39131d06e9a',
-    messagingSenderId: '358709916527',
-    projectId: 'upt-tutoria-app',
-    storageBucket: 'upt-tutoria-app.firebasestorage.app',
+    apiKey: 'AIzaSyB0uL7j_XzNBJL7LeThGH_KzI8Dc62Np0M',
+    appId: '1:416340531176:android:08e4d704e15b0cfb40f65d',
+    messagingSenderId: '416340531176',
+    projectId: 'bd-app-epis',
+    storageBucket: 'bd-app-epis.firebasestorage.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
