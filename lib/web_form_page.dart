@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart'; // Asegúrate de tener esta importación si usas fechas
 
 // Define los colores de la app del asesor para consistencia si es necesario
 const Color primaryColor = Color(0xFF2C3E50);
@@ -21,7 +20,8 @@ class _WebFormPageState extends State<WebFormPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _identifierController = TextEditingController(); // Único controlador para Código o DNI
+  final TextEditingController _identifierController =
+      TextEditingController(); // Único controlador para Código o DNI
   String? _selectedAttentionType;
   UserType? _selectedUserType; // Variable para almacenar el tipo de usuario
 
@@ -32,7 +32,7 @@ class _WebFormPageState extends State<WebFormPage> {
     'Reforzamiento',
     'Bajas calificaciones',
     'Llamado del asesor',
-    'Otros'
+    'Otros',
   ];
 
   Future<void> _submitForm() async {
@@ -41,23 +41,30 @@ class _WebFormPageState extends State<WebFormPage> {
       if (_selectedUserType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Por favor, selecciona si eres Estudiante o Externo.'),
+            content: Text(
+              'Por favor, selecciona si eres Estudiante o Externo.',
+            ),
             backgroundColor: Colors.orangeAccent,
           ),
         );
         return;
       }
 
-      setState(() { _isLoading = true; });
+      setState(() {
+        _isLoading = true;
+      });
 
       try {
         // Prepara los datos a guardar
         Map<String, dynamic> dataToSave = {
-          'userType': _selectedUserType == UserType.student ? 'Estudiante' : 'Externo',
+          'userType': _selectedUserType == UserType.student
+              ? 'Estudiante'
+              : 'Externo',
           'studentName': _nameController.text.trim(),
           'studentLastName': _lastNameController.text.trim(),
           'attentionType': _selectedAttentionType,
-          'timestamp': FieldValue.serverTimestamp(), // Hora automática de Firebase
+          'timestamp':
+              FieldValue.serverTimestamp(), // Hora automática de Firebase
           'advisorNotes': '',
         };
 
@@ -67,10 +74,13 @@ class _WebFormPageState extends State<WebFormPage> {
           dataToSave['dni'] = null; // Asegura que el otro campo sea nulo
         } else {
           dataToSave['dni'] = _identifierController.text.trim();
-          dataToSave['studentCode'] = null; // Asegura que el otro campo sea nulo
+          dataToSave['studentCode'] =
+              null; // Asegura que el otro campo sea nulo
         }
 
-        await FirebaseFirestore.instance.collection('attentions').add(dataToSave);
+        await FirebaseFirestore.instance
+            .collection('attentions')
+            .add(dataToSave);
 
         // Limpiar formulario
         _nameController.clear();
@@ -96,7 +106,9 @@ class _WebFormPageState extends State<WebFormPage> {
         );
       } finally {
         if (mounted) {
-           setState(() { _isLoading = false; });
+          setState(() {
+            _isLoading = false;
+          });
         }
       }
     }
@@ -114,7 +126,8 @@ class _WebFormPageState extends State<WebFormPage> {
   Widget build(BuildContext context) {
     // Determina la etiqueta y el tipo de teclado para el campo identificador
     String identifierLabel = 'Código de Estudiante';
-    TextInputType identifierKeyboardType = TextInputType.text; // Puede ser alfanumérico
+    TextInputType identifierKeyboardType =
+        TextInputType.text; // Puede ser alfanumérico
     if (_selectedUserType == UserType.external) {
       identifierLabel = 'DNI';
       identifierKeyboardType = TextInputType.number; // DNI suele ser numérico
@@ -152,13 +165,22 @@ class _WebFormPageState extends State<WebFormPage> {
                 children: <Widget>[
                   Text(
                     'Registra tu Atención',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: primaryColor),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(color: primaryColor),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
 
                   // --- Selección de Tipo de Usuario ---
-                  const Text('Tipo de Usuario:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primaryColor)),
+                  const Text(
+                    'Tipo de Usuario:',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -168,7 +190,9 @@ class _WebFormPageState extends State<WebFormPage> {
                           value: UserType.student,
                           groupValue: _selectedUserType,
                           onChanged: (UserType? value) {
-                            setState(() { _selectedUserType = value; });
+                            setState(() {
+                              _selectedUserType = value;
+                            });
                           },
                           activeColor: accentColor,
                         ),
@@ -179,9 +203,11 @@ class _WebFormPageState extends State<WebFormPage> {
                           value: UserType.external,
                           groupValue: _selectedUserType,
                           onChanged: (UserType? value) {
-                            setState(() { _selectedUserType = value; });
+                            setState(() {
+                              _selectedUserType = value;
+                            });
                           },
-                           activeColor: accentColor,
+                          activeColor: accentColor,
                         ),
                       ),
                     ],
@@ -195,7 +221,9 @@ class _WebFormPageState extends State<WebFormPage> {
                       labelText: 'Nombres',
                       prefixIcon: Icon(Icons.person_outline),
                     ),
-                    validator: (value) => (value == null || value.isEmpty) ? 'Ingresa tus nombres' : null,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Ingresa tus nombres'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -204,7 +232,9 @@ class _WebFormPageState extends State<WebFormPage> {
                       labelText: 'Apellidos',
                       prefixIcon: Icon(Icons.person),
                     ),
-                    validator: (value) => (value == null || value.isEmpty) ? 'Ingresa tus apellidos' : null,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Ingresa tus apellidos'
+                        : null,
                   ),
                   const SizedBox(height: 16),
 
@@ -225,8 +255,9 @@ class _WebFormPageState extends State<WebFormPage> {
                           return 'Ingresa tu $identifierLabel';
                         }
                         // Validación simple para DNI (8 dígitos)
-                        if (_selectedUserType == UserType.external && value.length != 8) {
-                           return 'El DNI debe tener 8 dígitos';
+                        if (_selectedUserType == UserType.external &&
+                            value.length != 8) {
+                          return 'El DNI debe tener 8 dígitos';
                         }
                         return null;
                       },
@@ -235,35 +266,49 @@ class _WebFormPageState extends State<WebFormPage> {
 
                   // --- Tipo de Atención ---
                   DropdownButtonFormField<String>(
-                    value: _selectedAttentionType,
+                    initialValue: _selectedAttentionType,
                     decoration: const InputDecoration(
                       labelText: 'Tipo de Atención',
                       prefixIcon: Icon(Icons.category_outlined),
                     ),
                     hint: const Text('Selecciona el motivo'),
                     items: attentionTypes.map((String type) {
-                      return DropdownMenuItem<String>(value: type, child: Text(type));
+                      return DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      setState(() { _selectedAttentionType = newValue; });
+                      setState(() {
+                        _selectedAttentionType = newValue;
+                      });
                     },
-                    validator: (value) => (value == null) ? 'Selecciona un tipo' : null,
+                    validator: (value) =>
+                        (value == null) ? 'Selecciona un tipo' : null,
                   ),
                   const SizedBox(height: 24),
 
                   // --- Botón de Envío ---
                   _isLoading
-                      ? const Center(child: CircularProgressIndicator(color: accentColor))
+                      ? const Center(
+                          child: CircularProgressIndicator(color: accentColor),
+                        )
                       : ElevatedButton.icon(
                           onPressed: _submitForm,
                           icon: const Icon(Icons.send_outlined),
                           label: const Text('Registrar Atención'),
-                          style: ElevatedButton.styleFrom( // Estilo consistente con la app del asesor
-                             backgroundColor: accentColor,
-                             foregroundColor: Colors.white,
-                             padding: const EdgeInsets.symmetric(vertical: 16),
-                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                             textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: ElevatedButton.styleFrom(
+                            // Estilo consistente con la app del asesor
+                            backgroundColor: accentColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                 ],

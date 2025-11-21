@@ -17,7 +17,8 @@ class AdvisorDashboardApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Dashboard del Asesor',
-      theme: ThemeData( // Tema consistente
+      theme: ThemeData(
+        // Tema consistente
         primaryColor: primaryColor,
         scaffoldBackgroundColor: backgroundColor,
         colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -34,56 +35,76 @@ class AdvisorDashboardApp extends StatelessWidget {
             backgroundColor: accentColor,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder( // Usar OutlineInputBorder por defecto
+          border: OutlineInputBorder(
+            // Usar OutlineInputBorder por defecto
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: Colors.grey.shade300), // Borde sutil
           ),
-          enabledBorder: OutlineInputBorder( // Borde cuando está habilitado
-             borderRadius: BorderRadius.circular(10),
-             borderSide: BorderSide(color: Colors.grey.shade300),
+          enabledBorder: OutlineInputBorder(
+            // Borde cuando está habilitado
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey.shade300),
           ),
-          focusedBorder: OutlineInputBorder( // Borde cuando tiene foco
-             borderRadius: BorderRadius.circular(10),
-             borderSide: const BorderSide(color: primaryColor, width: 2), // Borde más grueso y color primario
+          focusedBorder: OutlineInputBorder(
+            // Borde cuando tiene foco
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(
+              color: primaryColor,
+              width: 2,
+            ), // Borde más grueso y color primario
           ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 12.0), // Padding ajustado
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14.0,
+            horizontal: 12.0,
+          ), // Padding ajustado
         ),
-         // Estilo para el Switch
+        // Estilo para el Switch
         switchTheme: SwitchThemeData(
-          thumbColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+          thumbColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
+            if (states.contains(WidgetState.selected)) {
               return accentColor; // Color cuando está activo
             }
             return null; // Usa el color por defecto cuando está inactivo
           }),
-          trackColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+          trackColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
+            if (states.contains(WidgetState.selected)) {
               return accentColor.withOpacity(0.5);
             }
             return null;
           }),
         ),
-         textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(foregroundColor: primaryColor)
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: primaryColor),
         ),
-         // Estilo para Card
-         cardTheme: CardThemeData(
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-         ),
-          // Estilo para FloatingActionButton
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
-             backgroundColor: accentColor, // Color de acento por defecto
-             foregroundColor: Colors.white,
-          )
+        // Estilo para Card
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        ),
+        // Estilo para FloatingActionButton
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: accentColor, // Color de acento por defecto
+          foregroundColor: Colors.white,
+        ),
       ),
       home: const LoginPage(),
     );
@@ -115,10 +136,11 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       // 1. Inicia sesión en Firebase Auth
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       // 2. Verifica si el usuario existe y está activo en Firestore
       if (userCredential.user != null) {
@@ -128,21 +150,26 @@ class _LoginPageState extends State<LoginPage> {
             .get();
 
         if (userDoc.exists) {
-          final userData = userDoc.data() as Map<String, dynamic>; // Obtener datos
+          final userData =
+              userDoc.data() as Map<String, dynamic>; // Obtener datos
           // Verificar si el campo 'isActive' existe y es true
-          if (userData.containsKey('isActive') && userData['isActive'] == true) {
-             _userRole = userData['role']; // Si existe y está activo, guarda el rol
+          if (userData.containsKey('isActive') &&
+              userData['isActive'] == true) {
+            _userRole =
+                userData['role']; // Si existe y está activo, guarda el rol
           } else {
-             // Si no existe 'isActive' o es false
-             await FirebaseAuth.instance.signOut(); // Cierra sesión
-             if (mounted) {
-               ScaffoldMessenger.of(context).showSnackBar(
-                 const SnackBar(
-                   content: Text('Tu cuenta está deshabilitada. Contacta al administrador.'),
-                   backgroundColor: Colors.orangeAccent,
-                 ),
-               );
-             }
+            // Si no existe 'isActive' o es false
+            await FirebaseAuth.instance.signOut(); // Cierra sesión
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Tu cuenta está deshabilitada. Contacta al administrador.',
+                  ),
+                  backgroundColor: Colors.orangeAccent,
+                ),
+              );
+            }
           }
         } else {
           // Si no existe en Firestore
@@ -150,7 +177,9 @@ class _LoginPageState extends State<LoginPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('No se encontró registro de usuario. Contacta al administrador.'),
+                content: Text(
+                  'No se encontró registro de usuario. Contacta al administrador.',
+                ),
                 backgroundColor: Colors.orangeAccent,
               ),
             );
@@ -161,12 +190,13 @@ class _LoginPageState extends State<LoginPage> {
       // 3. Navega al Dashboard SOLO si el usuario está activo y tenemos rol
       if (mounted && _userRole != null) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => DashboardPage(userRole: _userRole!)),
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(userRole: _userRole!),
+          ),
         );
       }
       // Si _userRole es null (inactivo o no encontrado), no navega
-
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       // Manejo específico para credenciales incorrectas
       String message = 'Correo o contraseña incorrectos.';
       // Podrías añadir más códigos de error si quisieras: 'user-not-found', 'wrong-password'
@@ -175,13 +205,17 @@ class _LoginPageState extends State<LoginPage> {
           SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
         );
       }
-    } catch (e) { // Captura otros errores (Firestore, red, etc.)
+    } catch (e) {
+      // Captura otros errores (Firestore, red, etc.)
       print("Error en _signIn: $e"); // Imprime el error para depuración
-       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text('Ocurrió un error inesperado al verificar usuario.'), backgroundColor: Colors.redAccent),
-         );
-       }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ocurrió un error inesperado al verificar usuario.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -210,7 +244,8 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(32.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Centrar verticalmente
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centrar verticalmente
               children: [
                 const Icon(Icons.school_outlined, size: 80, color: accentColor),
                 const SizedBox(height: 20),
@@ -232,26 +267,39 @@ class _LoginPageState extends State<LoginPage> {
                         controller: _emailController,
                         decoration: const InputDecoration(
                           hintText: 'Correo Electrónico',
-                          prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                          prefixIcon: Icon(
+                            Icons.email_outlined,
+                            color: primaryColor,
+                          ),
                         ),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) => (value == null || !value.contains('@'))
-                            ? 'Ingresa un correo válido' : null,
+                        validator: (value) =>
+                            (value == null || !value.contains('@'))
+                                ? 'Ingresa un correo válido'
+                                : null,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _passwordController,
                         decoration: const InputDecoration(
                           hintText: 'Contraseña',
-                          prefixIcon: Icon(Icons.lock_outline, color: primaryColor),
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: primaryColor,
+                          ),
                         ),
                         obscureText: true,
                         validator: (value) => (value == null || value.isEmpty)
-                            ? 'Ingresa tu contraseña' : null,
+                            ? 'Ingresa tu contraseña'
+                            : null,
                       ),
                       const SizedBox(height: 30),
                       _isLoading
-                          ? const Center(child: CircularProgressIndicator(color: accentColor))
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: accentColor,
+                              ),
+                            )
                           : ElevatedButton(
                               onPressed: _signIn,
                               child: const Text('Iniciar Sesión'),

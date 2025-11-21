@@ -15,14 +15,15 @@ import 'pdf_service.dart';
 class DashboardPage extends StatelessWidget {
   final String userRole; // Recibe el rol del usuario logueado
 
-  DashboardPage({super.key, required this.userRole});
+  const DashboardPage({super.key, required this.userRole});
 
   final String webAppUrl = "https://upt-tutoria-app.web.app/";
 
   @override
   Widget build(BuildContext context) {
     final PdfService pdfService = PdfService();
-    final bool isSuperAdmin = (userRole == 'superadmin'); // Verifica si es superadmin
+    final bool isSuperAdmin =
+        (userRole == 'superadmin'); // Verifica si es superadmin
 
     return Scaffold(
       appBar: AppBar(
@@ -34,11 +35,13 @@ class DashboardPage extends StatelessWidget {
             icon: const Icon(Icons.info_outline),
             tooltip: 'Info Página Web',
             onPressed: () {
-                showDialog(
+              showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     title: const Row(
                       children: [
                         Icon(Icons.link, color: primaryColor),
@@ -52,44 +55,60 @@ class DashboardPage extends StatelessWidget {
                           const Text('URL para el registro de asistencias:'),
                           const SizedBox(height: 10),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: SelectableText(
                               webAppUrl,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: accentColor),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ),
                           const SizedBox(height: 15),
                           Center(
                             child: ElevatedButton.icon(
-                               icon: const Icon(Icons.copy, size: 16),
-                               label: const Text('Copiar Enlace'),
-                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: accentColor,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  )
-                               ),
-                               onPressed: () {
-                                 Clipboard.setData(ClipboardData(text: webAppUrl));
-                                 Navigator.of(context).pop();
-                                 ScaffoldMessenger.of(context).showSnackBar(
-                                   const SnackBar(content: Text('Enlace copiado al portapapeles'), backgroundColor: accentColor)
-                                 );
-                               },
-                             ),
-                          )
+                              icon: const Icon(Icons.copy, size: 16),
+                              label: const Text('Copiar Enlace'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: accentColor,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: webAppUrl),
+                                );
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Enlace copiado al portapapeles',
+                                    ),
+                                    backgroundColor: accentColor,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     actions: <Widget>[
                       TextButton(
-                        child: const Text('Cerrar', style: TextStyle(color: primaryColor)),
+                        child: const Text(
+                          'Cerrar',
+                          style: TextStyle(color: primaryColor),
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -108,14 +127,16 @@ class DashboardPage extends StatelessWidget {
               icon: const Icon(Icons.manage_accounts_outlined),
               tooltip: 'Gestionar Usuarios',
               onPressed: () {
-                 Navigator.push(
-                   context,
-                   MaterialPageRoute(builder: (context) => const UserManagementPage()),
-                 );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserManagementPage(),
+                  ),
+                );
               },
             ),
-          if (isSuperAdmin) const SizedBox(width: 8.0), // Espacio si el botón se muestra
-
+          if (isSuperAdmin)
+            const SizedBox(width: 8.0), // Espacio si el botón se muestra
           // Botón de Cerrar Sesión
           IconButton(
             icon: const Icon(Icons.logout),
@@ -139,13 +160,17 @@ class DashboardPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: primaryColor));
+            return const Center(
+              child: CircularProgressIndicator(color: primaryColor),
+            );
           }
           if (snapshot.hasError) {
-             print("Error en StreamBuilder: ${snapshot.error}");
-             return const Center(child: Text('Ocurrió un error al cargar los datos.'));
+            print("Error en StreamBuilder: ${snapshot.error}");
+            return const Center(
+              child: Text('Ocurrió un error al cargar los datos.'),
+            );
           }
-           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             // Mostrar la tarjeta de estadísticas incluso si no hay datos
             final Map<String, int> emptyCounts = {};
             return Column(
@@ -155,7 +180,9 @@ class DashboardPage extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const StatisticsPage()),
+                      MaterialPageRoute(
+                        builder: (context) => const StatisticsPage(),
+                      ),
                     );
                   },
                 ),
@@ -170,7 +197,6 @@ class DashboardPage extends StatelessWidget {
               ],
             );
           }
-
 
           final attentions = snapshot.data!.docs;
           final Map<String, int> attentionCounts = {};
@@ -187,7 +213,9 @@ class DashboardPage extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const StatisticsPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const StatisticsPage(),
+                    ),
                   );
                 },
               ),
@@ -197,33 +225,53 @@ class DashboardPage extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Atenciones Recientes',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryColor),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
                   ),
                 ),
               ),
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 80), // Padding inferior para no solapar con FABs
+                  padding: const EdgeInsets.fromLTRB(
+                    8,
+                    0,
+                    8,
+                    80,
+                  ), // Padding inferior para no solapar con FABs
                   itemCount: attentions.length,
                   itemBuilder: (context, index) {
-                    final attentionData = attentions[index].data() as Map<String, dynamic>;
+                    final attentionData =
+                        attentions[index].data() as Map<String, dynamic>;
                     String formattedDate = 'Fecha no disponible';
                     if (attentionData['timestamp'] != null) {
                       final timestamp = attentionData['timestamp'] as Timestamp;
-                      formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(timestamp.toDate());
+                      formattedDate = DateFormat(
+                        'dd/MM/yyyy, hh:mm a',
+                      ).format(timestamp.toDate());
                     }
                     String advisorNotes = attentionData['advisorNotes'] ?? '';
                     if (advisorNotes.length > 80) {
                       advisorNotes = '${advisorNotes.substring(0, 80)}...';
                     }
 
-                    return Card( // Usa el tema por defecto
+                    return Card(
+                      // Usa el tema por defecto
                       // margin y shape vienen del tema
                       child: ListTile(
-                        leading: const Icon(Icons.person, color: accentColor, size: 30),
+                        leading: const Icon(
+                          Icons.person,
+                          color: accentColor,
+                          size: 30,
+                        ),
                         title: Text(
                           '${attentionData['studentName']} ${attentionData['studentLastName']}',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                          ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +282,11 @@ class DashboardPage extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
                                   advisorNotes,
-                                  style: TextStyle(color: Colors.grey.shade700, fontStyle: FontStyle.italic, fontSize: 12),
+                                  style: TextStyle(
+                                    color: Colors.grey.shade700,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 12,
+                                  ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -243,7 +295,10 @@ class DashboardPage extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 4.0),
                               child: Text(
                                 formattedDate,
-                                style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ],
@@ -253,7 +308,8 @@ class DashboardPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AttentionDetailPage(attentionId: docId),
+                              builder: (context) =>
+                                  AttentionDetailPage(attentionId: docId),
                             ),
                           );
                         },
@@ -267,7 +323,11 @@ class DashboardPage extends StatelessWidget {
         },
       ),
       floatingActionButton: Padding(
-         padding: const EdgeInsets.only(left: 32.0, right: 16.0, bottom: 16.0), // Ajusta padding
+        padding: const EdgeInsets.only(
+          left: 32.0,
+          right: 16.0,
+          bottom: 16.0,
+        ), // Ajusta padding
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -275,7 +335,9 @@ class DashboardPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddAttentionPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const AddAttentionPage(),
+                  ),
                 );
               },
               heroTag: 'addAttentionBtn',
@@ -290,7 +352,7 @@ class DashboardPage extends StatelessWidget {
                     .orderBy('timestamp', descending: true)
                     .get();
 
-                 if (!context.mounted) return;
+                if (!context.mounted) return;
 
                 if (data.docs.isNotEmpty) {
                   await pdfService.generateAndPrintPdf(
@@ -300,19 +362,23 @@ class DashboardPage extends StatelessWidget {
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No hay datos para generar un reporte.')),
+                    const SnackBar(
+                      content: Text('No hay datos para generar un reporte.'),
+                    ),
                   );
                 }
               },
               heroTag: 'generatePdfBtn',
-              backgroundColor: primaryColor, // Mantiene el color primario para PDF
+              backgroundColor:
+                  primaryColor, // Mantiene el color primario para PDF
               tooltip: 'Generar Reporte PDF General',
               child: const Icon(Icons.picture_as_pdf),
             ),
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat, // Posición ajustada
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerFloat, // Posición ajustada
     );
   }
 }

@@ -8,9 +8,7 @@ import 'advisor_dashboard_app.dart'; // Será la app móvil
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -26,13 +24,12 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'UPT Tutoría App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/',
       routes: {
         '/': (context) => const WebFormPage(), // Por defecto, el formulario web
-        '/advisor': (context) => const AdvisorDashboardApp(), // La app para el asesor
+        '/advisor': (context) =>
+            const AdvisorDashboardApp(), // La app para el asesor
       },
       // Si la plataforma es Android/iOS, queremos que la app principal sea la del asesor.
       // Si es web, queremos que sea el formulario.
@@ -49,7 +46,9 @@ class MyApp extends StatelessWidget {
           // Más adelante, el "main" de la app del asesor será su propio widget.
           return MaterialPageRoute(builder: (context) => const WebFormPage());
         } else if (settings.name == '/advisor') {
-          return MaterialPageRoute(builder: (context) => const AdvisorDashboardApp());
+          return MaterialPageRoute(
+            builder: (context) => const AdvisorDashboardApp(),
+          );
         }
         return null; // Ruta no encontrada
       },

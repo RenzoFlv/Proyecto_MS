@@ -22,8 +22,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
   bool _isLoading = true;
 
   final List<String> _attentionTypes = [
-    'Motivo personal', 'Reforzamiento', 'Bajas calificaciones',
-    'Llamado del asesor', 'Otros'
+    'Motivo personal',
+    'Reforzamiento',
+    'Bajas calificaciones',
+    'Llamado del asesor',
+    'Otros',
   ];
 
   @override
@@ -33,9 +36,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Future<void> _applyFilters() async {
-    setState(() { _isLoading = true; });
+    setState(() {
+      _isLoading = true;
+    });
 
-    Query query = FirebaseFirestore.instance.collection('attentions')
+    Query query = FirebaseFirestore.instance
+        .collection('attentions')
         .orderBy('timestamp', descending: true);
 
     // Aplicar filtro de tipo PRIMERO si está seleccionado
@@ -51,27 +57,43 @@ class _StatisticsPageState extends State<StatisticsPage> {
     if (_dateFilter == 'month') {
       effectiveStartDate = DateTime(now.year, now.month, 1);
       effectiveEndDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-    } else if (_dateFilter == 'custom' && _startDate != null && _endDate != null) {
-       // Asegurarse que startDate sea antes que endDate
+    } else if (_dateFilter == 'custom' &&
+        _startDate != null &&
+        _endDate != null) {
+      // Asegurarse que startDate sea antes que endDate
       if (_startDate!.isAfter(_endDate!)) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text('La fecha "Desde" debe ser anterior a la fecha "Hasta".'), backgroundColor: Colors.orangeAccent,)
-         );
-         setState(() => _isLoading = false);
-         return; // Detener si las fechas son inválidas
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'La fecha "Desde" debe ser anterior a la fecha "Hasta".',
+            ),
+            backgroundColor: Colors.orangeAccent,
+          ),
+        );
+        setState(() => _isLoading = false);
+        return; // Detener si las fechas son inválidas
       }
       effectiveStartDate = _startDate;
-      effectiveEndDate = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+      effectiveEndDate = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        23,
+        59,
+        59,
+      );
     }
 
     // Añadir los filtros de fecha a la consulta
     if (effectiveStartDate != null) {
-        query = query.where('timestamp', isGreaterThanOrEqualTo: effectiveStartDate);
+      query = query.where(
+        'timestamp',
+        isGreaterThanOrEqualTo: effectiveStartDate,
+      );
     }
     if (effectiveEndDate != null) {
-        query = query.where('timestamp', isLessThanOrEqualTo: effectiveEndDate);
+      query = query.where('timestamp', isLessThanOrEqualTo: effectiveEndDate);
     }
-
 
     try {
       final snapshot = await query.get();
@@ -84,18 +106,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Error al filtrar. Es posible que necesites crear un índice en Firebase. Revisa la consola de depuración.'),
+            content: Text(
+              'Error al filtrar. Es posible que necesites crear un índice en Firebase. Revisa la consola de depuración.',
+            ),
             backgroundColor: Colors.redAccent,
             duration: Duration(seconds: 5), // Dar más tiempo para leer
-          )
+          ),
         );
       }
-      setState(() { _isLoading = false; });
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-
-  Future<void> _selectDate(BuildContext context, {required bool isStartDate}) async {
+  Future<void> _selectDate(
+    BuildContext context, {
+    required bool isStartDate,
+  }) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: (isStartDate ? _startDate : _endDate) ?? DateTime.now(),
@@ -106,21 +134,20 @@ class _StatisticsPageState extends State<StatisticsPage> {
       setState(() {
         if (isStartDate) {
           _startDate = picked;
-           // Si startDate es posterior a endDate, ajusta endDate
+          // Si startDate es posterior a endDate, ajusta endDate
           if (_endDate != null && _startDate!.isAfter(_endDate!)) {
             _endDate = _startDate;
           }
         } else {
           _endDate = picked;
           // Si endDate es anterior a startDate, ajusta startDate
-           if (_startDate != null && _endDate!.isBefore(_startDate!)) {
+          if (_startDate != null && _endDate!.isBefore(_startDate!)) {
             _startDate = _endDate;
           }
         }
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -133,34 +160,40 @@ class _StatisticsPageState extends State<StatisticsPage> {
           _buildFilterControls(),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: primaryColor))
+                ? const Center(
+                    child: CircularProgressIndicator(color: primaryColor),
+                  )
                 : _filteredAttentions.isEmpty
-                    ? const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20.0),
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        'No se encontraron resultados para los filtros seleccionados.',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      StatsCard(attentionCounts: _getAttentionCounts()),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
                           child: Text(
-                            'No se encontraron resultados para los filtros seleccionados.',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                            textAlign: TextAlign.center,
+                            'Resultados Filtrados',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
                           ),
                         ),
-                      )
-                    : Column(
-                      children: [
-                        StatsCard(attentionCounts: _getAttentionCounts()),
-                        const Padding(
-                           padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                           child: Align(
-                             alignment: Alignment.centerLeft,
-                             child: Text(
-                               'Resultados Filtrados',
-                               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
-                             ),
-                           ),
-                         ),
-                        Expanded(child: _buildResultsList()),
-                      ],
-                    ),
+                      ),
+                      Expanded(child: _buildResultsList()),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -176,12 +209,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No hay datos filtrados para generar un reporte.')),
+              const SnackBar(
+                content: Text(
+                  'No hay datos filtrados para generar un reporte.',
+                ),
+              ),
             );
           }
         },
-        child: const Icon(Icons.picture_as_pdf),
         tooltip: 'Generar PDF Filtrado',
+        child: const Icon(Icons.picture_as_pdf),
       ),
     );
   }
@@ -200,13 +237,27 @@ class _StatisticsPageState extends State<StatisticsPage> {
             // SegmentedButton de Fechas
             SegmentedButton<String>(
               segments: const [
-                ButtonSegment(value: 'all', label: Text('Todas'), icon: Icon(Icons.all_inclusive)),
-                ButtonSegment(value: 'month', label: Text('Este Mes'), icon: Icon(Icons.calendar_month)),
-                ButtonSegment(value: 'custom', label: Text('Rango'), icon: Icon(Icons.date_range)),
+                ButtonSegment(
+                  value: 'all',
+                  label: Text('Todas'),
+                  icon: Icon(Icons.all_inclusive),
+                ),
+                ButtonSegment(
+                  value: 'month',
+                  label: Text('Este Mes'),
+                  icon: Icon(Icons.calendar_month),
+                ),
+                ButtonSegment(
+                  value: 'custom',
+                  label: Text('Rango'),
+                  icon: Icon(Icons.date_range),
+                ),
               ],
               selected: {_dateFilter},
               onSelectionChanged: (Set<String> newSelection) {
-                setState(() { _dateFilter = newSelection.first; });
+                setState(() {
+                  _dateFilter = newSelection.first;
+                });
                 if (_dateFilter != 'custom') {
                   _startDate = null;
                   _endDate = null;
@@ -221,17 +272,33 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                         style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12), textStyle: const TextStyle(fontSize: 14)),
-                        onPressed: () => _selectDate(context, isStartDate: true),
-                        child: Text(_startDate == null ? 'Desde' : DateFormat('dd/MM/yy').format(_startDate!)),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          textStyle: const TextStyle(fontSize: 14),
+                        ),
+                        onPressed: () =>
+                            _selectDate(context, isStartDate: true),
+                        child: Text(
+                          _startDate == null
+                              ? 'Desde'
+                              : DateFormat('dd/MM/yy').format(_startDate!),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                         style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12), textStyle: const TextStyle(fontSize: 14)),
-                        onPressed: () => _selectDate(context, isStartDate: false),
-                        child: Text(_endDate == null ? 'Hasta' : DateFormat('dd/MM/yy').format(_endDate!)),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          textStyle: const TextStyle(fontSize: 14),
+                        ),
+                        onPressed: () =>
+                            _selectDate(context, isStartDate: false),
+                        child: Text(
+                          _endDate == null
+                              ? 'Hasta'
+                              : DateFormat('dd/MM/yy').format(_endDate!),
+                        ),
                       ),
                     ),
                   ],
@@ -241,36 +308,52 @@ class _StatisticsPageState extends State<StatisticsPage> {
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center, // Centrar verticalmente
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Centrar verticalmente
                 children: [
                   Expanded(
                     flex: 3, // Dropdown ocupa más espacio
                     child: DropdownButtonFormField<String>(
-                      value: _selectedAttentionType,
+                      initialValue: _selectedAttentionType,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.category_outlined),
                         hintText: 'Tipo',
-                        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0), // Menos padding vertical
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 12.0,
+                        ), // Menos padding vertical
                         border: OutlineInputBorder(), // Añadir borde estándar
                       ),
                       isExpanded: true,
                       onChanged: (String? newValue) {
-                        setState(() { _selectedAttentionType = newValue; });
+                        setState(() {
+                          _selectedAttentionType = newValue;
+                        });
                       },
                       items: [
-                        const DropdownMenuItem<String>(value: null, child: Text('Todos')), // Texto más corto
-                        ..._attentionTypes.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(value: value, child: Text(value, overflow: TextOverflow.ellipsis)); // Evita overflow
+                        const DropdownMenuItem<String>(
+                          value: null,
+                          child: Text('Todos'),
+                        ), // Texto más corto
+                        ..._attentionTypes.map<DropdownMenuItem<String>>((
+                          String value,
+                        ) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value, overflow: TextOverflow.ellipsis),
+                          ); // Evita overflow
                         }).toList(),
                       ],
                     ),
                   ),
                   const SizedBox(width: 16), // Espacio entre dropdown y botón
                   Expanded(
-                     flex: 2, // Botón ocupa menos espacio
+                    flex: 2, // Botón ocupa menos espacio
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                         padding: const EdgeInsets.symmetric(vertical: 14.5), // Ajustar padding para alinear altura aprox.
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14.5,
+                        ), // Ajustar padding para alinear altura aprox.
                       ),
                       onPressed: _applyFilters,
                       child: const Text('Aplicar'), // Texto cambiado
@@ -285,7 +368,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-
   Widget _buildResultsList() {
     if (_filteredAttentions.isEmpty) {
       return Container();
@@ -299,7 +381,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
         String formattedDate = 'Fecha no disponible';
         if (data['timestamp'] != null) {
           final timestamp = data['timestamp'] as Timestamp;
-          formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(timestamp.toDate());
+          formattedDate = DateFormat(
+            'dd/MM/yyyy, hh:mm a',
+          ).format(timestamp.toDate());
         }
 
         String advisorNotes = data['advisorNotes'] ?? '';
@@ -310,12 +394,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
         return Card(
           elevation: 2,
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: ListTile(
             leading: const Icon(Icons.person, color: accentColor, size: 30),
             title: Text(
               '${data['studentName']} ${data['studentLastName']}',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +415,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(
                       advisorNotes,
-                      style: TextStyle(color: Colors.grey.shade700, fontStyle: FontStyle.italic, fontSize: 12),
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 12,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -344,7 +437,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AttentionDetailPage(attentionId: _filteredAttentions[index].id),
+                  builder: (context) => AttentionDetailPage(
+                    attentionId: _filteredAttentions[index].id,
+                  ),
                 ),
               );
             },

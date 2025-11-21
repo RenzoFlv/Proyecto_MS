@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -27,15 +26,24 @@ class PdfService {
         header: (pw.Context context) {
           return pw.Column(
             children: [
-              pw.Text('Universidad Privada de Tacna',
-                  style: pw.TextStyle(font: ttf, fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'Universidad Privada de Tacna',
+                style: pw.TextStyle(
+                  font: ttf,
+                  fontSize: 16,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 5),
-              pw.Text('Reporte de Atenciones de Tutoría', style: pw.TextStyle(font: ttf, fontSize: 12)),
+              pw.Text(
+                'Reporte de Atenciones de Tutoría',
+                style: pw.TextStyle(font: ttf, fontSize: 12),
+              ),
               pw.Padding(
                 padding: const pw.EdgeInsets.only(top: 10, bottom: 20),
                 child: pw.Divider(thickness: 1),
               ),
-            ]
+            ],
           );
         },
         footer: (pw.Context context) {
@@ -62,11 +70,18 @@ class PdfService {
               alignment: pw.Alignment.centerLeft,
               child: pw.Text(
                 'Total de Atenciones Encontradas: ${attentions.length}',
-                style: pw.TextStyle(font: ttf, fontSize: 12, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  font: ttf,
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
             ),
             pw.SizedBox(height: 10),
-            _buildPdfTable(attentions, ttf), // Llama a la función de tabla actualizada
+            _buildPdfTable(
+              attentions,
+              ttf,
+            ), // Llama a la función de tabla actualizada
           ];
         },
       ),
@@ -86,9 +101,11 @@ class PdfService {
   }) {
     String dateText;
     if (dateFilter == 'month') {
-      dateText = "Periodo: Mes actual (${DateFormat.yMMMM('es_PE').format(DateTime.now())})";
+      dateText =
+          "Periodo: Mes actual (${DateFormat.yMMMM('es_PE').format(DateTime.now())})";
     } else if (dateFilter == 'custom' && startDate != null && endDate != null) {
-      dateText = "Periodo: Del ${DateFormat('dd/MM/yyyy').format(startDate)} al ${DateFormat('dd/MM/yyyy').format(endDate)}";
+      dateText =
+          "Periodo: Del ${DateFormat('dd/MM/yyyy').format(startDate)} al ${DateFormat('dd/MM/yyyy').format(endDate)}";
     } else {
       dateText = "Periodo: Todas las fechas";
     }
@@ -103,7 +120,10 @@ class PdfService {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text("Filtros Aplicados:", style: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            "Filtros Aplicados:",
+            style: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
+          ),
           pw.SizedBox(height: 5),
           pw.Text(dateText, style: pw.TextStyle(font: ttf)),
           pw.Text(typeText, style: pw.TextStyle(font: ttf)),
@@ -113,9 +133,18 @@ class PdfService {
   }
 
   // --- FUNCIÓN DE TABLA ACTUALIZADA ---
-  pw.Widget _buildPdfTable(List<QueryDocumentSnapshot> attentions, pw.Font ttf) {
+  pw.Widget _buildPdfTable(
+    List<QueryDocumentSnapshot> attentions,
+    pw.Font ttf,
+  ) {
     // 1. Cambiar el encabezado de la columna
-    final headers = ['N°', 'Nombres y Apellidos', 'Código/DNI', 'Tipo de Atención', 'Fecha'];
+    final headers = [
+      'N°',
+      'Nombres y Apellidos',
+      'Código/DNI',
+      'Tipo de Atención',
+      'Fecha',
+    ];
 
     final data = attentions.asMap().entries.map((entry) {
       final index = entry.key + 1;
@@ -132,9 +161,9 @@ class PdfService {
         identifier = doc['dni']?.toString() ?? 'N/R';
       } else {
         // Fallback si userType no está o es inesperado
-        identifier = (doc['studentCode']?.toString() ?? doc['dni']?.toString()) ?? 'N/R';
+        identifier =
+            (doc['studentCode']?.toString() ?? doc['dni']?.toString()) ?? 'N/R';
       }
-
 
       String formattedDate = 'N/A';
       if (doc['timestamp'] != null) {
@@ -143,13 +172,23 @@ class PdfService {
       }
 
       // 3. Devolver la fila con el identificador combinado
-      return [index.toString(), studentName, identifier, attentionType, formattedDate];
+      return [
+        index.toString(),
+        studentName,
+        identifier,
+        attentionType,
+        formattedDate,
+      ];
     }).toList();
 
     return pw.Table.fromTextArray(
       headers: headers,
       data: data,
-      headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold, fontSize: 10),
+      headerStyle: pw.TextStyle(
+        font: ttf,
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 10,
+      ),
       cellStyle: pw.TextStyle(font: ttf, fontSize: 9),
       headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
       cellHeight: 30,

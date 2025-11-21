@@ -6,20 +6,23 @@ class StatsCard extends StatelessWidget {
   final Map<String, int> attentionCounts;
   final VoidCallback? onTap; // Para hacerlo clickeable opcionalmente
 
-  StatsCard({
-    super.key,
-    required this.attentionCounts,
-    this.onTap,
-  });
+  const StatsCard({super.key, required this.attentionCounts, this.onTap});
 
   final List<Color> _colors = const [
-    Color(0xFF18BC9C), Color(0xFF3498DB), Color(0xFFF1C40F),
-    Color(0xFFE74C3C), Color(0xFF9B59B6), Color(0xFF34495E),
+    Color(0xFF18BC9C),
+    Color(0xFF3498DB),
+    Color(0xFFF1C40F),
+    Color(0xFFE74C3C),
+    Color(0xFF9B59B6),
+    Color(0xFF34495E),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final totalAttentions = attentionCounts.values.fold(0, (sum, item) => sum + item);
+    final totalAttentions = attentionCounts.values.fold(
+      0,
+      (sum, item) => sum + item,
+    );
 
     return Card(
       elevation: 2,
@@ -40,7 +43,11 @@ class StatsCard extends StatelessWidget {
                 children: [
                   const Text(
                     'Estadísticas de Atenciones',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: primaryColor),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: primaryColor,
+                    ),
                   ),
                   if (onTap != null)
                     Icon(Icons.filter_alt, color: Colors.grey.shade600),
@@ -109,7 +116,9 @@ class StatsCard extends StatelessWidget {
         // Radio reducido
         radius: 35,
         titleStyle: const TextStyle(
-          fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
           shadows: [Shadow(color: Colors.black, blurRadius: 1)],
         ),
       );
@@ -133,7 +142,10 @@ class StatsCard extends StatelessWidget {
 
 class Indicator extends StatelessWidget {
   const Indicator({
-    super.key, required this.color, required this.text, this.size = 14,
+    super.key,
+    required this.color,
+    required this.text,
+    this.size = 14,
   });
   final Color color;
   final String text;
@@ -145,7 +157,8 @@ class Indicator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Container(
-          width: size, height: size,
+          width: size,
+          height: size,
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(3),
@@ -156,10 +169,14 @@ class Indicator extends StatelessWidget {
         Flexible(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: primaryColor),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: primaryColor,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
-        )
+        ),
       ],
     );
   }
